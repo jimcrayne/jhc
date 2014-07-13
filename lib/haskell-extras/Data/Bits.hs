@@ -7,7 +7,7 @@ import Jhc.Basics
 
 m4_include(Data/Bits.m4)
 
-infixl 8 `shift`, `rotate`, `shiftL`, `shiftR`, `rotateL`, `rotateR`
+infixl 8 `shift`, `rotate`, `shiftL`, `shiftR`, `rotateL`, `rotateR`, `arithmeticShiftR`, `logicalShiftR`
 infixl 7 .&.
 infixl 6 `xor`
 infixl 5 .|.
@@ -137,6 +137,12 @@ class Num a => Bits a where
 	question. -}
     rotateR           :: a -> Int -> a
     x `rotateR` i = x `rotate` (-i)
+
+    arithmeticShiftR  :: a -> Int -> a
+    x `arithmeticShiftR`  i = x `shift`  (-i)
+
+    logicalShiftR  :: a -> Int -> a
+    x `logicalShiftR`  i = x `shift`  (-i)
 
 BITSINST(Int,a)
 BITSINST(Int8,a)

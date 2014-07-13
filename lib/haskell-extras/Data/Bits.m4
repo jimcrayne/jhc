@@ -1,7 +1,6 @@
 m4_divert(-1)
 
 m4_define(BITSINST,{{
-
 instance Bits $1 where
     x .&. y = and$1 x y
     x .|. y = or$1 x y
@@ -9,14 +8,17 @@ instance Bits $1 where
     complement x = complement$1 x
     shiftL x i = shiftL$1 x i
     shiftR x i = shiftR$1 x i
+    arithmeticShiftR x i = arithmeticShiftR$1 x i
+    logicalShiftR x i = logicalShiftR$1 x i
 
 foreign import primitive "And" and$1 :: $1 -> $1 -> $1
 foreign import primitive "Or" or$1 :: $1 -> $1 -> $1
 foreign import primitive "Xor" xor$1 :: $1 -> $1 -> $1
 foreign import primitive "Shr$2" shiftR$1 :: $1 -> Int -> $1
+foreign import primitive "Shra" arithmeticShiftR$1 :: $1 -> Int -> $1
+foreign import primitive "Shr" logicalShiftR$1 :: $1 -> Int -> $1
 foreign import primitive "Shl" shiftL$1 :: $1 -> Int -> $1
 foreign import primitive "Com" complement$1 :: $1 -> $1
-
 }})
 
 m4_divert
