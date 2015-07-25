@@ -1,0 +1,310 @@
+; Any names the compiler might have to refer to internally go in here to get
+; definitions automatically created in an efficient and typesafe way.
+;
+; It seems long, but most are for deriving and desugaring.
+; semicolons introduce comments.
+;
+; The finished names are placed in Name.Prim
+
+TypeConstructor:tc:
+
+IOErrorType  Jhc.Type.Handle.IOErrorType
+IOMode       Jhc.Type.Handle.IOMode
+
+ACIO       Jhc.Prim.IO.ACIO
+Arrow      Jhc.Prim.Prim.->
+Bang_      Jhc.Prim.Rts.Bang_
+Bool       Jhc.Prim.Prim.Bool
+Bool_      Jhc.Prim.Bits.Bool_
+Char       Jhc.Type.Basic.Char
+IO         Jhc.Prim.IO.IO
+List       Jhc.Prim.Prim.[]
+MutArray__ Jhc.Prim.Array.MutArray_
+Ordering   Jhc.Prim.Prim.Ordering
+RealWorld  Jhc.Prim.IO.RealWorld
+ST         Jhc.Prim.IO.ST
+State_     Jhc.Prim.IO.State_
+Unit       Jhc.Prim.Prim.()
+
+; Jhc.Type
+Ratio      Jhc.Type.Float.Ratio
+Float      Jhc.Type.Float.Float
+Double     Jhc.Type.Float.Double
+Ptr        Jhc.Type.Ptr.Ptr
+FunPtr     Jhc.Type.Ptr.FunPtr
+
+Integer   Jhc.Type.Basic.Integer
+
+Int       Jhc.Type.Word.Int
+
+Bits1      Jhc.Prim.Bits.Bits1_
+Bits8      Jhc.Prim.Bits.Bits8_
+Bits16     Jhc.Prim.Bits.Bits16_
+Bits32     Jhc.Prim.Bits.Bits32_
+Bits64     Jhc.Prim.Bits.Bits64_
+Bits128    Jhc.Prim.Bits.Bits128_
+BitsPtr    Jhc.Prim.Bits.BitsPtr_
+BitsMax    Jhc.Prim.Bits.BitsMax_
+
+Float32    Jhc.Prim.Bits.Float32_
+Float64    Jhc.Prim.Bits.Float64_
+Float80    Jhc.Prim.Bits.Float80_
+Float128   Jhc.Prim.Bits.Float128_
+
+Complex    Jhc.Prim.Bits.Complex_
+
+Addr_      Jhc.Prim.Bits.Addr_
+FunAddr_   Jhc.Prim.Bits.FunAddr_
+Char_      Jhc.Prim.Bits.Char_
+
+DataConstructor:dc:
+
+Boolzh     Jhc.Prim.Prim.Bool#
+Char       Jhc.Type.Basic.Char
+Cons       Jhc.Prim.Prim.:
+EQ         Jhc.Prim.Prim.EQ
+EmptyList  Jhc.Prim.Prim.[]
+False      Jhc.Prim.Prim.False
+GT         Jhc.Prim.Prim.GT
+Int        Jhc.Type.Word.Int
+Integer    Jhc.Type.Basic.Integer
+Just       Jhc.Type.Basic.Just
+LT         Jhc.Prim.Prim.LT
+Nothing    Jhc.Type.Basic.Nothing
+Pair       Jhc.Prim.Prim.(,)
+Ratio      Jhc.Type.Float.:%
+True       Jhc.Prim.Prim.True
+Unit       Jhc.Prim.Prim.()
+Word       Jhc.Type.Word.Word
+
+ClassName:class:
+Eq              Jhc.Class.Ord.Eq
+Ord             Jhc.Class.Ord.Ord
+Enum            Jhc.Enum.Enum
+Bounded         Jhc.Enum.Bounded
+Show            Jhc.Show.Show
+Read            Jhc.Text.Read.Read
+Ix              Data.Ix.Ix
+Functor         Jhc.Monad.Functor
+Monad           Jhc.Monad.Monad
+Num             Jhc.Class.Num.Num
+Real            Jhc.Class.Real.Real
+Integral	Jhc.Class.Real.Integral
+Fractional	Jhc.Class.Real.Fractional
+Floating	Jhc.Float.Floating
+RealFrac	Jhc.Float.RealFrac
+RealFloat	Jhc.Float.RealFloat
+
+Typeable        Data.Typeable.Typeable
+Typeable1       Data.Typeable.Typeable1
+Typeable2       Data.Typeable.Typeable2
+Typeable3       Data.Typeable.Typeable3
+
+Foldable        Data.Foldable.Foldable
+Monoid          Data.Monoid.Monoid
+Traversable     Data.Traversable.Traversable
+
+RawType:rt:
+
+bits8         bits8
+bits16        bits16
+bits32        bits32
+bits64        bits64
+bits128       bits128
+bool          bool
+float32       fbits32
+float64       fbits64
+float80       fbits80
+float128      fbits128
+bits_max_     bits<max>
+bits_ptr_     bits<ptr>
+
+Val:v:
+
+error_           Jhc.Prim.Basics.error_
+undefined        Jhc.Prim.Basics.undefined
+cat              Jhc.Prim.List.++
+compose          Jhc.Prim.Basics..
+Dot              Jhc.Prim.Basics..
+
+eqString         Jhc.String.eqString
+eqUnpackedString Jhc.String.eqUnpackedString
+error            Jhc.IO.error
+fmap             Jhc.Monad.fmap
+fmap_const       Jhc.Monad.<$
+and              Jhc.Order.&&
+foldl            Jhc.Basics.foldl
+drop             Jhc.List.drop
+
+; list primitives used for comprehension desugaring.
+concat           Jhc.Prim.List.concat
+concatMap        Jhc.Prim.List.concatMap
+filter           Jhc.Prim.List.filter
+foldr            Jhc.Prim.List.foldr
+map              Jhc.Prim.List.map
+
+bind                 Jhc.Monad.>>=
+bind_                Jhc.Monad.>>
+fail                 Jhc.Monad.fail
+fromInteger          Jhc.Class.Num.fromInteger
+fromInt              Jhc.Class.Num.fromInt
+sub                  Jhc.Class.Num.-
+fromRational         Jhc.Class.Real.fromRational
+negate               Jhc.Class.Num.negate
+compare              Jhc.Class.Ord.compare
+leq                  Jhc.Class.Ord.<=
+geq                  Jhc.Class.Ord.>=
+lt                   Jhc.Class.Ord.<
+gt                   Jhc.Class.Ord.>
+equals               Jhc.Class.Ord.==
+fromEnum             Jhc.Enum.fromEnum
+toEnum               Jhc.Enum.toEnum
+enumFrom             Jhc.Enum.enumFrom
+enumFromTo           Jhc.Enum.enumFromTo
+enumFromThenTo       Jhc.Enum.enumFromThenTo
+enumFromThen         Jhc.Enum.enumFromThen
+succ                 Jhc.Enum.succ
+pred                 Jhc.Enum.pred
+minBound             Jhc.Enum.minBound
+maxBound             Jhc.Enum.maxBound
+showsPrec            Jhc.Show.showsPrec
+showParen            Jhc.Show.showParen
+showChar             Jhc.Show.showChar
+showString           Jhc.Show.showString
+readsPrec            Jhc.Text.Read.readsPrec
+readParen            Jhc.Text.Read.readParen
+lex                  Jhc.Text.Read.lex
+range                Data.Ix.range
+index                Data.Ix.index
+unsafeIndex          Data.Ix.unsafeIndex
+inRange              Data.Ix.inRange
+runExpr              Prelude.IO.runExpr
+runRaw               Jhc.Prim.Wrapper.runRaw
+runMain              Jhc.IO.runMain
+runNoWrapper         Jhc.Prim.Wrapper.runNoWrapper
+
+foldMap              Data.Foldable.foldMap
+fold                 Data.Foldable.fold
+mempty               Data.Monoid.mempty
+mappend              Data.Monoid.mappend
+traverse             Data.Traversable.traverse
+sequenceA            Data.Traversable.sequenceA
+lstar                Control.Applicative.<*>
+pure                 Control.Applicative.pure
+
+enum_succ            Jhc.Inst.PrimEnum.enum_succ
+enum_pred            Jhc.Inst.PrimEnum.enum_pred
+enum_from            Jhc.Inst.PrimEnum.enum_from
+enum_fromTo          Jhc.Inst.PrimEnum.enum_fromTo
+enum_fromThen        Jhc.Inst.PrimEnum.enum_fromThen
+enum_fromThenTo      Jhc.Inst.PrimEnum.enum_fromThenTo
+enum_toEnum          Jhc.Inst.PrimEnum.enum_toEnum
+ix_index             Jhc.Inst.PrimEnum.ix_index
+ix_inRange           Jhc.Inst.PrimEnum.ix_inRange
+ix_range             Jhc.Inst.PrimEnum.ix_range
+
+SortName:s:
+; kinds
+Star   *       ; The kind of lazy boxed types
+Hash   #       ; The kind of unboxed types
+Bang   !       ; The kind of strict boxed types
+Tuple (#)      ; The kind of unboxed tuples
+
+Quest        ?
+QuestQuest   ??
+StarBang     *!
+
+; superkinds
+HashHash  ##
+StarStar  **
+
+; unqualified values
+Val:vu:
+At           @
+Bang         !
+Dot          .
+Hash         #              ; kinds will be parsed as values.
+Minus        -
+Quest        ?
+QuestQuest   ??
+Star         *
+StarBang     *!
+Twiddle      ~
+alias        alias
+as           as
+closed       closed
+derive       derive
+exists       exists
+family       family
+forall       forall
+hiding       hiding
+kind         kind
+qualified    qualified
+main         main
+import       import
+sub          -
+
+enumFrom       enumFrom
+enumFromThen   enumFromThen
+enumFromThenTo enumFromThenTo
+enumFromTo     enumFromTo
+
+; placeholders
+UnknownType:u:
+
+At           @
+Bang         !
+Dot          .
+DotDot       ..
+Hash         #                  ; comment
+Minus        -
+Quest        ?
+QuestQuest   ??
+Star         *
+StarBang     *!
+Twiddle      ~
+alias        alias
+as           as
+closed       closed
+derive       derive
+exists       exists
+family       family
+forall       forall
+hiding       hiding
+kind         kind
+qualified    qualified
+instance     instance
+import       import
+placeholder  placeholder
+
+Quoted:q:
+dc_Cons
+dc_True
+dc_False
+dc_Just
+dc_Nothing
+dc_Unit
+dc_Pair
+v_equals
+v_and
+dc_EQ
+dc_GT
+dc_LT
+v_compare
+v_Dot
+v_showString
+v_showParen
+v_showsPrec
+v_geq
+
+Module:mod:
+
+Prelude
+Main
+unknown
+Jhc.Type.C
+Jhc.Type.Ptr
+
+Wild@
+Main@   ; The meta-module containing the whole program
+Prim@   ; The synthesized module containing primitives

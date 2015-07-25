@@ -1,0 +1,407 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use YAML;
+use Getopt::Long;
+use Pod::Usage;
+use Data::Dumper;
+use Storable qw(dclone);
+use POSIX  qw(strftime SIGINT);
+use Cwd;
+
+my @opts;
+my @fopts;
+my @mopts;
+
+my @saved_args = @ARGV;
+
+my $opt_l;
+my $opt_n;
+my $opt_p;
+my @opt_rts;
+my $opt_win;
+my $opt_clean;
+my $opt_timeout=60*5;
+my $opt_help;
+my $opt_man;
+my $opt_tc;
+my $opt_kb;
+my $show_all;
+my $verbose;
+
+Getopt::Long::Configure ("bundling", "auto_help");
+GetOptions(
+    help  => \$opt_help,
+    man   => \$opt_man,
+    'm=s' => \@mopts,
+    'f=s' => \@fopts,
+    'o=s' => \@opts,
+    't=i' => \$opt_timeout,
+    'a'   => \$show_all,
+    l => \$opt_l,
+    n => \$opt_n,
+    p => \$opt_p,
+    v => \$verbose,
+    's=s' => \$opt_tc,
+    'noskip=s' => \$opt_kb,
+    'win' => \$opt_win,
+    'rts=s' =>\@opt_rts,
+    clean => \$opt_clean,
+    ) or pod2usage(2);
+pod2usage(-verbose => 2) if $opt_man;
+pod2usage(1) if $opt_help;
+
+$opt_l = !$opt_l;
+
+# clean out environment
+delete $ENV{JHC_PATH};
+delete $ENV{JHC_OPTS};
+delete $ENV{JHC_CACHE};
+delete $ENV{JHC_LIBRARY_PATH};
+
+@opts = (@opts, (map { "-f$_" } @fopts), (map { "-m$_" } @mopts));
+@opts = (@opts, '--stop', $opt_tc) if $opt_tc;
+
+my @cond;
+my @ncond;
+
+foreach (@ARGV) {
+    /^\!(.*)/ ? push @ncond, $1 : push @cond, $_;
+}
+
+my $now_string = strftime "%a %b %e %H:%M:%S %Y", localtime;
+
+my $pwd = cwd();
+
+# figure out where we are
+
+my ($regress_dir,$jhc_dir);
+
+if (-d "tests" && -d "results") {
+    $regress_dir = ".";
+    $jhc_dir = "..";
+} elsif (-d "regress" && -f "Makefile") {
+    $regress_dir = "regress";
+    $jhc_dir = "."
+} else { die "could not figure out where I am" }
+
+my $test_dir = "$regress_dir/tests";
+my $results_dir = "$regress_dir/results";
+
+my $time = `date +%Y%m%d%H%M%S`;
+chomp $time;
+
+my $jhc_version = `$jhc_dir/jhc --version`;
+$? == 0 or die "Could not run $jhc_dir/jhc --version";
+
+my $rd = "$results_dir/$time";
+mkdir $rd or die "$!: could not make $rd";
+
+unlink "$results_dir/current";
+system "ln -sf $time $results_dir/current";
+
+my $ho_dir = $opt_clean ? "$rd/ho" : "$results_dir/ho";
+$ho_dir .= "_l" if $opt_l;
+mkdir $ho_dir;
+
+$ENV{JHC_CACHE} = $ho_dir;
+
+open RLOG, ">$rd/log.txt" or die "$!: Could not open log";
+
+rlog("$now_string");
+rlog("$jhc_version");
+rlog("regress ", join " ", @saved_args) if @saved_args;
+rlog("-----------------------------------");
+
+-d $test_dir or die "could not find $test_dir";
+
+sub maybe_read {
+    my ($fn) = @_;
+    open my $fh, "<$fn" or return ();
+    my @lines = <$fh>;
+    map { chomp } @lines;
+    close $fh;
+    return @lines;
+}
+
+my $error;
+my @res;
+
+sub rlog {
+    my $msg = join "",@_;
+    chomp $msg;
+    print RLOG $msg, "\n";
+    print $msg, "\n";
+}
+
+sub frlog {
+    my $msg = join "",@_;
+    chomp $msg;
+    print RLOG $msg, "\n";
+    print $msg, "\n" if $verbose;
+}
+
+sub my_system {
+    my $time_start = time();
+    frlog "; ", join " ",@_;
+    my $r = $opt_timeout ? system ("ulimit -t $opt_timeout ; ". join " ",@_) : system @_;
+    my $time_end = time();
+    return ($r,$time_end - $time_start);
+}
+
+my @libs = $opt_l ? ("-L-", "-L$jhc_dir", "-pjhc") : ("--noauto", "-i$jhc_dir/lib/jhc", "-i$jhc_dir/lib/base",
+        "-i$jhc_dir/lib/haskell98", "-i$jhc_dir/lib/haskell-extras", "-i$jhc_dir/lib/jhc-prim", "-XUnboxedTuples", "-XForeignFunctionInterface", "-XUnboxedValues");
+my @fast = $opt_n ? ("-fno-lint") : ("-fdebug", "-flint");
+
+sub to_list {
+    return () unless defined $_[0];
+    if(ref $_[0] eq 'ARRAY') {
+        return @{$_[0]};
+    } else {
+        return split /\s+/, $_[0];
+    }
+}
+
+sub combine_yaml {
+    my ($oy, $y) = @_;
+    my $ny = dclone $oy;
+    foreach(keys %$ny) {
+        next unless exists $y->{$_};
+        if(ref $ny->{$_} eq 'ARRAY') {
+            $ny->{$_} = [ @{$ny->{$_}}, to_list($y->{$_}) ];
+        } else {
+            $ny->{$_} = $y->{$_};
+        }
+    }
+    return $ny;
+}
+
+sub run_test {
+    my ($cwd, $y, $name, $ln, $fn) = @_;
+    $fn = $y->{progname} unless defined $fn;
+    if ($opt_kb) {
+        return unless defined $y->{skip} && $y->{skip} eq $opt_kb;
+    } else {
+        return if defined $y->{skip};
+    }
+    my $must_fail = (0 + $y->{jhc_exit_code}) != 0;
+    my $no_run = $y->{run} eq 'no';
+    my @flags = @{$y->{jhc_flags}};
+    return if $ln =~ /_code$/;
+    $fn =~ /^([^_].*)\.l?hs$/ or return;
+    my $fbase = "$cwd/$1";
+    $name = "$name.$ln";
+    if(@cond) {
+        my $keep = 0;
+        foreach (@cond) {
+            $keep = 1 if $name  =~ /$_/;
+        }
+        unless($keep) {
+            return;
+        }
+    }
+    foreach (@ncond) {
+        if($name =~ /$_/) {
+            return;
+        }
+    }
+    frlog "---- $name";
+    print ".";
+    STDOUT->flush;
+    my @jhc  = $opt_p ? ("$jhc_dir/jhcp",'+RTS', "-S$rd/$name.jhcp_prof",@opt_rts,'-RTS')  :  ("$jhc_dir/jhc");
+    my @cmd = (@jhc,"$cwd/$fn", ($verbose ? ('-v') : ()), ($opt_win ? ('-mwin32') : ()), @libs , @fast, '-o', "$rd/$name", @flags, @opts);
+    my $res = join(" ",@cmd) . " > '$rd/$name.jhc_out' 2>&1";
+    #my $res = join(" ",@cmd);
+    my ($r,$time) = my_system $res;
+    my $result = { name => $name, compile_command => $res, compile_status => $r, compile_results => "$rd/$name.jhc_out", compile_time => $time };
+    push @res, $result;
+    if($must_fail) {
+        if($r == 0) {
+            rlog "\n$name - Compilation Succeeded When It shouldn't!";
+            $error++;
+            $result->{compile_status} = 'BAD';
+            $result->{has_error}++;
+            return;
+        } else {
+            if(statf($r) eq 'INT') {
+                $result->{compile_status} = 'INT';
+                $result->{has_error}++;
+                done();
+            }
+            $result->{compile_status} = 'pass';
+            return;
+        }
+    } else {
+        if($r == 0) {
+            $result->{compile_status} = 'pass';
+        } else {
+            $result->{has_error}++;
+            $error++;
+        }
+    }
+    unless($r == 0) {
+        rlog "\nCompilation Failed: $name $r";
+        my $msg = `tail $result->{compile_results}`;
+        rlog $msg;
+        $result->{has_error}++;
+        $error++;
+        if(statf($r) eq 'INT') {done()};
+        return;
+    }
+    return if $no_run || $opt_tc;
+    my @args = @{$y->{args}};
+    $result->{run_stdout} = "$rd/$name.stdout";
+    my $discard_stderr = $y->{discard_stderr} ? " 2> /dev/null" : "";
+    my $stdin = " < $fbase.stdin" if -f "$fbase.stdin";
+    my $run_cmd = (($opt_win || $y->{opt_win}) ? "$rd/$name.exe " : "$rd/$name ") . join(" ",@args) . " > '$result->{run_stdout}'$discard_stderr" . ($stdin || "");
+    $result->{run_cmd} = $run_cmd;
+    ($r,$time) = my_system $run_cmd;
+    $result->{run_status} = $r;
+    $result->{run_time} = $time;
+    unless($r == 0) {
+        rlog "-- $name Run Failed: $r";
+        $result->{has_error}++;
+        $error++;
+        if(statf($r) eq 'INT') {done()};
+        return;
+    }
+
+    if(-f "$fbase.expected.stdout" ) {
+        $result->{expected_stdout} = "$fbase.expected.stdout";
+        my $r = system "diff --strip-trailing-cr $result->{run_stdout} $result->{expected_stdout}";
+        $result->{stdout_diff} = $r;
+        $result->{has_error}++ if $r ne 0;
+        $error++ if $r ne 0;
+    }
+}
+
+sub do_it {
+    my ($cwd,$name, $oy) = @_;
+    my ($y,$yc) = ($oy,{});
+    if(-f "$cwd/config.yaml") {
+        $yc = YAML::LoadFile("$cwd/config.yaml");
+        $y = combine_yaml($oy, $yc);
+    }
+    #print "Entering $cwd\n";
+    opendir my $dh,$cwd or die "$!: could not read $cwd";
+    my %done;
+    foreach my $fn (sort readdir $dh) {
+        next unless $fn =~ /^\w/;
+        my $n = "$cwd/$fn";
+        if (-d $n && $n ne "results") {
+            my $fnn = $fn;
+            $fnn =~ s/^\d+_//;
+            do_it($n,$name ? "$name.$fnn" : $fnn, $y);
+        } elsif ($fn =~ /^([^_].*)\.l?hs$/) {
+            $done{$1} = 1;
+            my $y = combine_yaml($y, $yc->{tests}{$1});
+            run_test($cwd,$y,$name,$1,$fn);
+        }
+    }
+    foreach my $t (sort keys %{$y->{tests}}) {
+        next if $done{$t}++;
+        #print Dumper($cwd,$y,$name,$t);
+        my $y = combine_yaml($y, $yc->{tests}{$t});
+        next unless $y->{progname};
+        run_test($cwd,$y,$name,$t,undef);
+    }
+    closedir $dh;
+}
+
+do_it($test_dir,"", {
+        jhc_flags => [],
+        cc_flags => [],
+        run_args => [],
+        jhc_exit_code => 0,
+        args => [],
+        libs => [],
+        progname => undef,
+        run => 'yes',
+        opt_win => undef,
+        discard_stderr => undef,
+        skip => undef
+    });
+done();
+
+sub statf {
+    return $_[0] if defined $_[0] && $_[0] =~ /[a-zA-Z]+/;
+    return defined $_[0] ? ($_[0] == 64512 || ($_[0] & 127) == SIGINT()  ? "INT" : $_[0] == 35072 || ($_[0] & 127) ==  24 ? "TIME" : $_[0]) : "-";
+}
+
+sub done {
+    sub timef {
+        return defined $_[0] ? "$_[0]s" : "-";
+    }
+    rlog("-----------------------------------");
+    rlog("$now_string");
+    rlog("$jhc_version");
+    rlog("regress ", join " ", @saved_args) if @saved_args;
+    rlog "\n-------------------------------------------------------------------------";
+
+    my $fmt = "%10s %25s %5s %5s %5s %7s %7s\n";
+    rlog sprintf $fmt, "Category", "Name", "Compile", "Run", "Out", "CTime", "RTime";
+    rlog "-------------------------------------------------------------------------";
+    my $failing = 0;
+    foreach my $r (@res) {
+        $failing++ if $r->{has_error};
+        next unless $r->{has_error} || $show_all;
+        my $name = $r->{name};
+        $name =~ s/^tests\.//;
+        $name =~ /^([^.]*)\.(.*)$/;
+        rlog sprintf $fmt, $1, $2, statf($r->{compile_status}),statf($r->{run_status}),statf($r->{stdout_diff}), timef($r->{compile_time}), timef($r->{run_time}) ;
+    }
+    rlog sprintf "Tests: %i total %i passing %i failing", scalar @res, scalar @res - $failing, $failing;
+    close RLOG;
+    unlink "$results_dir/last";
+    system "mv -f $results_dir/latest $results_dir/last";
+    unlink "$results_dir/latest";
+    system "ln -sf $time $results_dir/latest";
+    unless ($error) {
+        unlink "$results_dir/latest_success";
+        system "ln -sf $time $results_dir/latest_success";
+    }
+    exit 0;
+}
+
+__END__
+
+=head1 NAME
+
+regress
+
+=head1 SYNOPSIS
+
+regress [options] [conditions]
+
+ Conditions:
+   <regex>       only run tests mathing regex
+   !<regex>      don't run tests matching regex
+
+ Options:
+   --help        brief help message
+   --man         full documentation
+
+   -m ARCH       passed through to JHC
+   -f FLAG       passed through to JHC
+   -o OPTION     pass given option to JHC
+   -t INT        timeout in seconds of CPU time
+
+   -l            do not use the libraries
+   -n            go faster by not linting
+   -p            profile JHC (requires jhcp to have been built)
+
+   -s PHASE      stop after phase
+
+   --rts         extra GHC RTS flags for JHC
+   --clean       start with fresh cache for test
+   --win         cross compile to windows and test with wine
+
+   --noskip RES  don't skip tests that match argument.
+
+=head1 DESCRIPTION
+
+Run the JHC test suite.
+
+=cut

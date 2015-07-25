@@ -1,0 +1,93 @@
+tests:
+   T1470:
+     skip: MultiParamTypeClasses
+   T2572:
+     skip: ScopedTypeVars
+   T2799:
+     skip: GADTs
+   T3409:
+     skip: TypeFamilies
+   T3346:
+     skip: TypeFamilies
+   T3955:
+     skip: GNTD
+   syn-perf:
+     skip: InfixTypes
+   tc102:
+     skip:  ScopedTypeVars
+   tc105:
+     skip:  ST
+   tc106:
+     skip:  MPTC
+   tc108:
+     skip:  MPTC
+   tc112:
+     skip:  FunDeps
+   tc114:
+     skip:  FunDeps
+   tc115:
+     skip:  FunDeps
+   tc116:
+     skip:  FunDeps
+   tc117:
+     skip:  FunDeps
+   tc118:
+     skip:  FunDeps
+   tc125:
+     skip:  FunDeps
+   tc126:
+     skip:  FunDeps
+   tc132:
+     skip:  ST
+   tc133:
+     skip:  Scoped
+   tc134:
+     skip:  Scoped
+   tc136:
+     skip:  Scoped
+   tc137:
+     skip:  FunDeps
+   tc141:
+     skip:  FunDeps
+   tc152:
+     skip:  FunDeps
+   tc156:
+     skip:  InfixTypes
+   tc166:
+     skip:  FunDeps
+   tc168:
+     skip:  FunDeps
+   tc177:
+     skip:  FunDeps
+   tc179:
+     skip:  OverlappingInstances
+   tc180:
+     skip:  FunDeps
+   tc181:
+     skip:  FunDeps
+   T3342:
+     skip: ViewPatterns
+   tc109:
+     skip:  FunDeps
+   tc119:
+     skip:  FunDeps
+   tc131:
+     skip:  FunDeps
+   tc135:
+     skip:  Scoped
+   tc176:
+     skip:  OverlappingInstances
+
+#bugs
+   tc178:
+     skip:  known_bug
+   tc092:
+     skip: known_bug
+   tc148:
+     skip:  known_bug
+   tc175:
+     skip:  known_bug
+   tc183:
+     skip:  known_bug
+   tc120:
+     skip:  known_feature

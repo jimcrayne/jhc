@@ -1,0 +1,11 @@
+Name: applicative
+Version: 1.0
+Hs-Source-Dirs: .
+build-depends: [ -, haskell-extras ]
+
+Exposed-Modules:
+        - Control.Applicative
+        - Control.Arrow
+        - Control.Category
+        - Data.Foldable
+        - Data.Traversable

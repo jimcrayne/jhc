@@ -1,0 +1,134 @@
+
+
+digraph jhc {
+        rankdir = TB
+
+        source_file     [ label = "Main.hs",  shape = parallelogram ]
+        source_file -> abstract_haskell  [ label = "FrontEnd.HsParser" ]
+
+        subgraph cluster_hs {
+                label = "FrontEnd.HsSyn"
+                style = dotted
+                abstract_haskell [ label = "Abstract Haskell" ]
+                renamed_abstract_haskell [ label = "Renamed HsSyn" ]
+                desugared_abstract_haskell [ label = "Desugared HsSyn" ]
+
+                abstract_haskell -> renamed_abstract_haskell
+                renamed_abstract_haskell -> desugared_abstract_haskell
+
+                typechecker [ label = "Typechecker: FrontEnd.Tc", shape = box ]
+
+                desugared_abstract_haskell -> typechecker
+                typechecked_abstract_haskell [ label = "Annotated\nAbstract Haskell" ]
+                typechecker -> typechecked_abstract_haskell
+        }
+
+        subgraph cluster_local_e {
+                label = "Core local: Main.processDecls"
+                style = dotted
+                processed_ho [ label = "Processed Ho" ]
+                rules_and_specializations [ label = "Specializations, Pragmas" ]
+                local_core [ label = "Core" ]
+                workwrapped_core [ label = "Workwrapped Core" ]
+                initial_core [ label = "Abnormal\nCore and Rules" ]
+                from_hs [ shape = box, label = "E.FromHs" ]
+
+                typechecked_abstract_haskell -> from_hs
+                typechecker -> from_hs [ style = dashed, arrowhead = vee ]
+                typechecker -> rules_and_specializations  [ style = dashed, arrowhead = vee ]
+                from_hs -> rules_and_specializations  [ arrowhead = vee]
+                rules_and_specializations -> local_core [ arrowhead = vee ]
+                from_hs -> initial_core [ arrowhead = vee ]
+                initial_core -> local_core [ label = "atomize applications,\nannotate ids,\nuniquify"]
+                local_core -> local_core [ label = "Optimize" ]
+                local_core -> workwrapped_core [ label = "E.WorkWrap" ]
+                workwrapped_core -> workwrapped_core [ label = "Optimize" ]
+                workwrapped_core -> processed_ho
+        }
+
+        subgraph cluster_foo {
+                label = "Core global: Main.compileModEnv"
+                style = dotted
+                // core global pass
+                initial_program [ label = "Collected Program" ]
+                typeanalyzed_program [ label = "Typeanalyzed Program" ]
+                processed_ho -> initial_program  [ arrowhead = vee ]
+                optimized_program [ label = "Program" ]
+                program_no_rules [ label = "Program" ]
+                optimized_program -> program_no_rules [ label = "Discard Rules" ]
+                class_expanded_program [ label = "Program with full class methods" ]
+                initial_program -> typeanalyzed_program [ label = "E.TypeAnalyse" ]
+                typeanalyzed_program -> class_expanded_program [ label = "E.FromHs.createMethods" ]
+                optimized_program -> optimized_program [ label = "Optimize" ]
+                program_no_rules -> program_no_rules [ label = "Optimize without Rules" ]
+                class_expanded_program -> optimized_program
+                boxy_core [ label = "Boxed Core" ]
+                program_no_rules -> boxy_core
+                class_expanded_program -> boxy_core [ label = "-fno-global-optimize" ]
+
+                subgraph cluster_final {
+                        label = "Core Boxed: Polymorphism Erased"
+                        style = dotted
+                        lambda_lifted_core [ label = "Lambda Lifted Core" ]
+                        mangled_core [ label = "Mangled Core" ]
+
+                        boxy_core -> boxy_core [ label = "Optimize" ]
+                        lambda_lifted_core -> lambda_lifted_core [ label = "Simplify" ]
+                        boxy_core -> lambda_lifted_core [ label = "E.LambdaLift" ]
+                        lambda_lifted_core -> mangled_core [ label = "Grin.MangleE" ]
+                }
+        }
+
+        subgraph cluster_grin {
+                label = "Grin.Grin.Grin"
+                style = dotted
+                grin [ label = "Grin" ]
+                evalexpanded_grin [ label = "Grin after Eval and Apply inlining" ]
+
+                mangled_core -> grin [ label = "Grin.FromHs" ]
+                grin -> grin [ label = "Optimize" ]
+                grin -> evalexpanded_grin [ label = "Grin.PointsToAnalyze" ]
+                evalexpanded_grin -> evalexpanded_grin [ label = "Optimize" ]
+
+        }
+        executable [ label = "Executable: main", shape = parallelogram ]
+        c [ label = "C Code: main_code.c", shape = parallelogram ]
+
+        evalexpanded_grin -> c  [ label = "C.FromGrin" ]
+        c -> executable [ label = "gcc" ]
+
+
+
+        subgraph cluster_ho {
+                // ho data read off disk
+                label = "Ho Files"
+                style = dotted
+                read_ho_data [ label = "Ho data from ho and hl files" ]
+                collected_ho_data [ label = "All Ho data needed for library" ]
+                hl_library [ label = "Library: main-1.0.hl", shape = parallelogram ]
+                ho_file [ label = "Ho: Main.ho", shape = parallelogram ]
+
+                ho_file -> read_ho_data
+                hl_library -> read_ho_data
+                read_ho_data -> processed_ho [ label = "Main.processInitialHo"]
+                processed_ho -> ho_file [ label = "Ho.Build.recordHoFile" ]
+                processed_ho -> collected_ho_data   [ arrowhead = vee ]
+                read_ho_data -> collected_ho_data [ label = "FrontEnd.parseFiles" ]
+                collected_ho_data -> hl_library  [ label = "Ho.Library.createLibrary" ]
+
+        }
+
+        subgraph cluster_legend {
+                label = "Legend"
+                file [ label = "File", shape = parallelogram ]
+                concrete [ label = "Concrete\nrepresentation" ]
+                operation [ label = "Operation", shape = box ]
+                concrete -> operation [ label = "Code\nMovement", arrowhead = vee ]
+                operation -> concrete [ label = "Metainfo\nMovement", style = dashed, arrowhead = vee ]
+                operation -> file [ label = "Code\nTransformation"  ]
+
+        }
+}
+
+
+

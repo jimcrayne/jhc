@@ -1,0 +1,26 @@
+--- !ditz.rubyforge.org,2008-03-06/issue 
+title: remove special handling of 'Num' from the compiler
+desc: Num is handled specially by the PrimitiveOperators mechanism. Instances should be explicitly declared in the libraries rather than magically conjured by the compiler.
+type: :task
+component: jhc
+release: 0.7.6
+reporter: John Meacham <john@repetae.net>
+status: :closed
+disposition: :fixed
+creation_time: 2010-07-09 22:07:27.758354 Z
+references: []
+
+id: 3c947a28a576f1e8120f82e88a958b4168cdff4f
+log_events: 
+- - 2010-07-09 22:07:30.898380 Z
+  - John Meacham <john@repetae.net>
+  - created
+  - ""
+- - 2010-07-31 09:00:02.083167 Z
+  - John Meacham <john@repetae.net>
+  - assigned to release 0.7.6 from unassigned
+  - ""
+- - 2010-07-31 09:13:16.883166 Z
+  - John Meacham <john@repetae.net>
+  - closed with disposition fixed
+  - ""

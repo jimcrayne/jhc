@@ -1,0 +1,49 @@
+{-@Options
+
+# Code Options
+
+Various options affecting how jhc interprets and compiles code can be
+controlled with the '-f' flag, the following options are availible, you can
+negate any particular one by prepending 'no-' to it.
+
+!Code options
+unboxed-tuples allow unboxed tuple syntax to be recognized
+unboxed-values allow unboxed value syntax
+ffi support foreign function declarations
+cpp pass haskell source through c preprocessor
+m4 pass haskell source through m4 preprocessor
+prelude implicitly import Prelude
+sugar  disable/enable all desugarings, only unboxed literals allowed.
+type-families type/data family support
+user-kinds user defined kinds
+forall forall keyword for rank-n types and explicit quantification
+exists exists keyword for existential types recognized
+bang-patterns - bang patterns
+
+!Typechecking
+mono-local-binds make local bindings monomorphic
+monomorphism-restriction enforce monomorphism restriction
+defaulting perform defaulting of ambiguous types
+
+!Debugging
+lint perform lots of extra type checks
+
+!Optimization Options
+inline-pragmas use inline pragmas
+rules use rules
+type-analysis perform a basic points-to analysis on types right after method generation
+global-optimize perform whole program E optimization
+
+!Code Generation
+standalone compile to a standalone executable
+full-int extend Int and Word to 32 bits on a 32 bit machine (rather than 30)
+wrapper wrap main in exception handler
+boehm use Boehm garbage collector
+jgc   use the jgc garbage collector
+profile enable profiling code in generated executable
+debug enable debugging code in generated executable
+raw just evaluate main to WHNF and nothing else.
+
+!Default settings
+@default inline-pragmas rules wrapper type-analysis global-optimize full-int
+@glasgow-exts forall ffi unboxed-tuples

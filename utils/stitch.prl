@@ -1,0 +1,64 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use Getopt::Std;
+
+my %o;
+getopts('h:c:t:l',\%o) or die "unknown option";
+
+my @order = $o{c} ? split /,/,$o{c} : qw(
+    Using
+    Options
+    Libraries
+    Pragmas
+    Extensions
+    Differences
+    CrossCompilation
+    Internals
+    );
+
+my %h;
+
+my %s;
+
+foreach my $fn (@ARGV) {
+    open my $fh, "<$fn" or die "$!: could not open $fn";
+    while(<$fh>) {
+        /^(\{\-|\/\*)[#@](\w+)(\s+(\d+))?\s*$/ or next;
+        my ($section,$text,$order) = ($2,"",defined $4 ? $4 : 100);
+        while(<$fh>) {
+            /^(\-\}|\*\/)\s*$/ and last;
+            $text .= $_;
+        }
+        $s{$section} ||= [];
+        push @{$s{$section} ||= []}, [$order,$text];
+        $h{$section}{files} .= ":$fn";
+        print "$fn\n" if $o{l};
+    }
+}
+
+exit if $o{l};
+
+foreach (keys %s) {
+    $h{$_}{text} = join "\n",map { $_->[1] } sort { $a->[0] <=> $b->[0] } @{$s{$_}};
+}
+
+print "% Jhc User's Manual\n";
+print "% John Meacham\n\n";
+
+if($o{h}) {
+    open my $h,"<",$o{h} or die "$!: couldn't open $o{h}";
+    print (<$h>);
+}
+
+foreach(@order) {
+    print "\n# $_\n\n";
+    $h{$_}{text} =~ s/^(#+ )/#$1/mg;
+    print $h{$_}{text};
+}
+
+foreach(keys %h) {
+    print STDERR $_," ",$h{$_}{files},"\n";
+}

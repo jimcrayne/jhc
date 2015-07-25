@@ -1,0 +1,156 @@
+h1,h2,h3,h4,h5,h6 {
+font-family:"Helvetica Neue", Helvetica, "Liberation Sans", Calibri, Arial, sans-serif;
+page-break-after:avoid;
+}
+
+div div,section section /* Nested sections */ {
+margin-left:2em;
+}
+
+blockquote {
+font-style:italic;
+}
+
+li > p /* Loosely spaced list item */ {
+margin-top:1em;
+}
+
+em > em /* Emphasis within emphasis: *This is all *emphasized* except that* */ {
+font-style:normal;
+}
+
+a /* All links */ {
+text-decoration:none;
+}
+
+img {
+vertical-align:middle;
+}
+
+div.figure /* Pandoc figure-style image */ {
+margin-left:auto;
+margin-right:auto;
+text-align:center;
+font-style:italic;
+}
+
+pre,code {
+background-color:#DDE;
+white-space:0!important;
+word-wrap:break-word;
+}
+
+pre /* Code blocks */ {
+border-radius:5px;
+border:1px solid #aaa;
+margin-left:.5em;
+margin-right:.5em;
+padding:.5em;
+}
+
+p > code,li > code /* Code spans in paragraphs and tight lists */ {
+padding-left:2px;
+padding-right:2px;
+}
+
+li > p code /* Code span in a loose list */ {
+padding:2px;
+}
+
+table {
+table-layout: auto;
+border-collapse:collapse;
+border-spacing:0;
+border-bottom:2pt solid #000;
+border-top:2pt solid #000;
+margin-left:5%;
+}
+
+thead /* Entire table header */ {
+border-bottom:1pt solid #000;
+background-color:#eee;
+}
+
+tr.odd:hover,tr.even:hover /* Use .odd and .even classes to avoid styling rows in other tables */ {
+background-color:#eee;
+}
+
+td,th /* Table cells and table header cells */ {
+vertical-align:baseline;
+padding:.2em .5em;
+}
+
+caption /* This is for a table caption tag,not the p.caption Pandoc uses in a div.figure */ {
+caption-side:top;
+border:none;
+font-size:.9em;
+font-style:italic;
+text-align:center;
+margin-bottom:.3em;
+padding-bottom:.2em;
+}
+
+dl /* The whole list */ {
+border-top:2pt solid #000;
+padding-top:.5em;
+border-bottom:2pt solid #000;
+}
+
+dd+dt /* 2nd or greater term in the list */ {
+border-top:1pt solid #000;
+padding-top:.5em;
+}
+
+dd /* A definition */ {
+margin-bottom:.5em;
+}
+
+dd+dd /* 2nd or greater definition of a term */ {
+border-top:1px solid #000;
+}
+
+a.footnote,a.footnoteRef {
+font-size:small;
+vertical-align:text-top;
+}
+
+div#header,header,div#TOC,nav#TOC {
+border-bottom:1px solid #aaa;
+margin-bottom:.5em;
+}
+
+.title /* Pandoc title header (h1.title) */,.author,.date /* Pandoc author(s) and date headers (h2.author and h3.date) */ {
+text-align:center;
+}
+
+th /* Table header cells */,dt /* Definition term */ {
+font-weight:700;
+}
+
+@media print {
+a {
+color:#000;
+background:transparent;
+}
+
+a[href^=http://]:after,a[href^=https://]:after {
+content:" (" attr(href) ") ";
+font-size:90%;
+}
+
+div#TOC,nav#TOC,a[href^=#fnref],a.reversefootnote /* Pandoc,MultiMarkdown */,.noprint {
+display:none;
+}
+}
+
+@media screen {
+a:hover {
+text-decoration:underline;
+}
+
+pre {
+white-space:pre;
+overflow:auto;
+border:1px dotted #777;
+}
+}

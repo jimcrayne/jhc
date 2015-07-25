@@ -1,0 +1,36 @@
+tests:
+   T3468:
+     skip: no SOURCE pragma
+   T3966:
+     skip: no UNPACK pragma
+   Tcfail186_Help:
+     skip: not test
+   T5084:
+     skip: not error in jhc
+   tcfail107:
+        skip: not error in jhc
+   tcfail120:
+        skip: not error in jhc
+   tcfail129:
+        skip: not error in jhc
+   tcfail144:
+        skip: not error in jhc
+   tcfail149:
+        skip: not error in jhc
+   tcfail150:
+        skip: not error in jhc
+   tcfail183:
+        skip: not error in jhc
+   tcfail197:
+        skip: not error in jhc
+   tcfail032:
+     skip: jhc extension allows this
+   tcfail071:
+     skip: jhc extension allows this
+   tcfail139:
+     skip: jhc extension allows this
+   tcfail204:
+     skip: ghc specific
+
+   tcfail198:
+        skip: scoped variables

@@ -1,0 +1,95 @@
+--- !ditz.rubyforge.org,2008-03-06/project 
+name: jhc
+version: "0.5"
+components: 
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: jhc
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: tc
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: ui
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: opt
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: fe
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: lib
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: lang
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: be
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: rts
+- !ditz.rubyforge.org,2008-03-06/component 
+  name: test
+releases: 
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: 0.6.0
+  status: :released
+  release_time: 2009-03-27 08:22:13.520019 Z
+  log_events: 
+  - - 2009-03-27 08:22:03.507070 Z
+    - John Meacham <john@repetae.net>
+    - created
+    - ""
+  - - 2009-03-27 08:22:13.520034 Z
+    - John Meacham <john@repetae.net>
+    - released
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: 1.0.0
+  status: :unreleased
+  release_time: 
+  log_events: 
+  - - 2009-03-27 08:23:38.978338 Z
+    - John Meacham <john@repetae.net>
+    - created
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: 0.8.0
+  status: :unreleased
+  release_time: 
+  log_events: 
+  - - 2010-07-09 21:58:52.799250 Z
+    - John Meacham <john@repetae.net>
+    - created
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: 0.7.5
+  status: :released
+  release_time: 2010-07-22 03:28:48.972263 Z
+  log_events: 
+  - - 2010-07-09 21:59:18.109248 Z
+    - John Meacham <john@repetae.net>
+    - created
+    - ""
+  - - 2010-07-22 03:28:48.972263 Z
+    - John Meacham <john@repetae.net>
+    - released
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: 0.7.4
+  status: :released
+  release_time: 2010-07-10 06:08:44.421060 Z
+  log_events: 
+  - - 2010-07-09 21:58:43.629236 Z
+    - John Meacham <john@repetae.net>
+    - created
+    - ""
+  - - 2010-07-10 06:08:44.421060 Z
+    - John Meacham <john@repetae.net>
+    - released
+    - ""
+- !ditz.rubyforge.org,2008-03-06/release 
+  name: 0.7.6
+  status: :released
+  release_time: 2010-07-31 09:20:11.763166 Z
+  log_events: 
+  - - 2010-07-22 02:20:12.504129 Z
+    - John Meacham <john@repetae.net>
+    - created
+    - ""
+  - - 2010-07-31 09:20:11.763166 Z
+    - John Meacham <john@repetae.net>
+    - released
+    - ""

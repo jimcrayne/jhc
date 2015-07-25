@@ -1,0 +1,81 @@
+{-@Options
+
+# Dumping Debugging Information
+
+You can have jhc print out a variety of things while running as Controlled by
+the '-d' flag. The following is a list of possible parameters you can pass to
+'-d'.
+
+!Front End
+ini all ini configuration options
+tokens raw token stream before parsing
+preprocessed code after preprocessing/deliting
+parsed  parsed code
+renamed code after uniqueness renaming
+decls       processed declarations before typechecking
+derived show generated derived instances
+imports show in scope names for each module
+exports show which names are exported from each module
+scc-modules show strongly connected modules in dependency order
+defs Show all defined names in a module
+fixity show fixity map
+qualified show qualified names in error messages
+
+!Type Checker
+kind        show results of kind inference for each module
+kind-steps  show steps of kind inference
+dcons       data constructors
+class-summary summary of all classes
+class       detailed information on each class
+instance    show instances
+bindgroups  show bindgroups
+types       display unified type table containing all defined names
+all-types   show unified type table, after everything has been typechecked
+sigenv      initial signature environment
+srcsigs     processed signatures from source code
+program     impl expls, the whole shebang.
+boxy-steps  show step by step what the type inferencer is doing
+aspats      show as patterns
+
+!Intermediate code
+core-pass    show each iteration of code while transforming
+core-steps   show what happens in each pass
+core-mini    show details even when optimizing individual functions
+core-initial show core right after E.FromHs conversion
+core-beforelift show core before lambda lifting
+core-afterlift  show final core before writing ho file
+core         show intermediate core code
+core-mangled de-typed core right before it is converted to grin
+datatable-builtin show data table entries for some built in types
+datatable    show data table of constructors
+optimization-stats show combined stats of optimization passes
+rules        show all user rules and catalysts
+rules-spec  show specialization rules
+e-info       show info tags on all bound variables
+e-verbose    print very verbose version of E code always
+e-alias      show expanded aliases
+e-size       print the size of E after each pass
+
+!Grin code
+tags list of all tags and their types
+steps show interpreter go
+grin dump all grin to the screen
+grin-datalog print out grin information in a format suitable for loading into a database
+grin-preeval show grin code just before eval/apply inlining
+grin-posteval show grin code just before eval/apply inlining
+grin-initial grin right after conversion from core
+grin-normalized grin right after first normalization
+grin-graph print dot file of final grin code to outputname_grin.dot
+grin-final final grin before conversion to C
+
+!Backend code
+c don't delete C source file after compilation
+
+!Internal
+atom dump atom table on exit
+
+!General
+@verbose     progress
+@veryverbose progress stats
+progress     show basic progress indicators
+stats        show extra information about stuff

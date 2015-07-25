@@ -1,0 +1,53 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+use YAML;
+use Getopt::Std;
+
+our $opt_e;
+getopts('e') or die;
+
+sub pdeps {
+    while(@_) {
+        for(my $i = 0; $i < 5; $i++) {
+            last unless @_;
+            print " ", shift;
+        }
+        print " \\\n   " if @_;
+    }
+    print "\n";
+}
+
+my @targets;
+
+foreach (@ARGV) {
+    next unless -f $_;
+    my $y = YAML::LoadFile($_);
+    next unless exists $y->{Target};
+    my @deps;
+    @deps = values %{$y->{ModuleSource}} if !$opt_e;
+    push @deps, values %{$y->{LibraryDeps}} if exists $y->{LibraryDeps};
+    push @deps, values %{$y->{LibraryDepsUnused}} if exists $y->{LibraryDepsUnused};
+    if (exists $y->{LibraryDesc}) {
+        my @ld = @{$y->{LibraryDesc}};
+        map { s/^tmp\/build\/[^\/]*/lib\/ext/ } @ld;
+        @deps = (@ld, @deps);
+    }
+    map { s/^\.\/// } @deps;
+    foreach (@deps) {
+        my $patch = $_;
+        push @deps, $patch if $patch =~ s/\.yaml(.m4)?$/.patch/ and -e $patch;
+    }
+    push @targets, @{$y->{Target}};
+    for (sort @{$y->{Target}}) {
+        print "$_:";
+        my ($ld,@rest) = @deps;
+        pdeps($ld, sort @rest);
+        print "\tperl utils/build_extlibs.prl \$<\n" if $opt_e;
+        print "\t./jhc \$(LIB_OPTIONS) --build-hl \$< -o \$@\n" if !$opt_e;
+    }
+}
+print ($opt_e ? "JHC_EXT_LIBS =" : "JHC_LIBS =") if @targets;
+pdeps(sort @targets) if @targets;
