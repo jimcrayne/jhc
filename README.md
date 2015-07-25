@@ -10,7 +10,7 @@ jhc is a haskell compiler which aims to produce the most efficient programs poss
 
 See the Installation Page for information about downloading and installing jhc.
 
-For information on running jhc, see The User's Manual.
+For information on running jhc, see [The User's Manual](http://repetae.net/computer/jhc/manual.html).
 
 Join the jhc mailing list for jhc discussion, announcements, and bug reports.
 
