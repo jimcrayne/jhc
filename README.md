@@ -18,7 +18,7 @@ jhc is a haskell compiler which aims to produce the most efficient programs poss
 
 # Developing Jhc
 
-    the [development page](http://repetae.net/computer/jhc/development.shtml) has information on how to pull the development tree from the darcs repository
+    * the [development page](http://repetae.net/computer/jhc/development.shtml) has information on how to pull the development tree from the darcs repository
 
-    An informal graph of the internal code motion in jhc is [here](http://repetae.net/computer/jhc/big-picture.pdf).
+    * An informal graph of the internal code motion in jhc is [here](http://repetae.net/computer/jhc/big-picture.pdf).
 
