@@ -20,7 +20,7 @@ There is a [spot on the wiki](http://haskell.org/haskellwiki/Jhc) but it doesn't
 
 The [development page](http://repetae.net/computer/jhc/development.shtml) has information on how to pull the development tree from the darcs repository
 
-the [bug tracker](http://repetae.net/computer/jhc/bug) tracks known jhc issues, bugs can be added by submitting darcs patches or just posting to the mailing list jhc@haskell.org. NOTE: Issues on this github mirror will be forwarded to the mailing list.
+The [bug tracker](http://repetae.net/computer/jhc/bug) tracks known jhc issues, bugs can be added by submitting darcs patches or just posting to the mailing list jhc@haskell.org. NOTE: Issues on this github mirror will be forwarded to the mailing list.
 
 An informal graph of the internal code motion in jhc is [here](http://repetae.net/computer/jhc/big-picture.pdf).
 
