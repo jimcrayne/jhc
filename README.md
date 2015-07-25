@@ -24,3 +24,6 @@ The [bug tracker](http://repetae.net/computer/jhc/bug) tracks known jhc issues, 
 
 An informal graph of the internal code motion in jhc is [here](http://repetae.net/computer/jhc/big-picture.pdf).
 
+## Website
+
+[Here](http://repetae.net/computer/jhc/) is the original website, belonging to John Meacham.
