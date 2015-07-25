@@ -8,13 +8,13 @@ jhc is a haskell compiler which aims to produce the most efficient programs poss
 
 # Using Jhc
 
-See the Installation Page for information about downloading and installing jhc.
+See the [Installation Page](http://repetae.net/computer/jhc/building.shtml) for information about downloading and installing jhc.
 
 For information on running jhc, see [The User's Manual](http://repetae.net/computer/jhc/manual.html).
 
-Join the jhc mailing list for jhc discussion, announcements, and bug reports.
+Join the [jhc mailing list](http://www.haskell.org/mailman/listinfo/jhc) for jhc discussion, announcements, and bug reports.
 
-There is a spot on the wiki but it doesn't have much info yet. feel free to expand it.
+There is a [spot on the wiki](http://haskell.org/haskellwiki/Jhc) but it doesn't have much info yet. feel free to expand it.
 
 # Developing Jhc
 
