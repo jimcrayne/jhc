@@ -1,5 +1,10 @@
 # Jhc Haskell Compiler
 
+To initialize a fresh clone of the source repository, you must first run:
+```
+autoreconf --install
+```
+
 [How to install](http://repetae.net/computer/jhc/building.shtml)
 
 [The Manual](http://repetae.net/computer/jhc/manual.html)
