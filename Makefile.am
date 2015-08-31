@@ -191,7 +191,7 @@ ChangeLog:
 	(test -d .git && git shortlog `git describe | sed 's/^\([^-]*\).*/\1/'`..HEAD > $@ ) || (test -d _darcs && darcs changes --from-tag . > $@)
 
 src/data/shortchange.txt: ChangeLog
-	(test -d .git && git describe | sed  's`\([^-]\+-[^-]*\).*`\1`' | tr -d '\n' > $@ ) || (test -d _darcs && echo -n "`sed -ne 's/^  tagged \(.*\)/\1/p' $<`-`grep -c '^  \*' $<`"  > $@)
+	(test -d .git && git describe | tr -d '\n' > $@ ) || (test -d _darcs && echo -n "`sed -ne 's/^  tagged \(.*\)/\1/p' $<`-`grep -c '^  \*' $<`"  > $@)
 
 BINDISTDIR=$(PACKAGE)-$(VERSION)-$(host)
 
