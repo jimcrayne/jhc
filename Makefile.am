@@ -188,10 +188,10 @@ src/RawFiles.hs: $(RAWFILES)
 .SECONDARY: _darcs/hashed_inventory src/data/shortchange.txt
 
 ChangeLog:
-	darcs changes --from-tag . > $@
+	(test -d .git && git shortlog `git describe | sed 's/^\([^-]*\).*/\1/'`..HEAD > $@ ) || (test -d _darcs && darcs changes --from-tag . > $@)
 
 src/data/shortchange.txt: ChangeLog
-	echo -n "`sed -ne 's/^  tagged \(.*\)/\1/p' $<`-`grep -c '^  \*' $<`"  > $@
+	(test -d .git && git describe | sed  's`\([^-]\+-[^-]*\).*`\1`' > $@ ) || (test -d _darcs && echo -n "`sed -ne 's/^  tagged \(.*\)/\1/p' $<`-`grep -c '^  \*' $<`"  > $@)
 
 BINDISTDIR=$(PACKAGE)-$(VERSION)-$(host)
 
